@@ -1,0 +1,402 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import TOC from '../components/TOC.astro';
+import LikeButton from '../components/LikeButton.astro';
+import GiscusComments from '../components/GiscusComments.astro';
+import { SITE_OWNER, resolveAuthorName } from '../lib/site';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { post, headings } = Astro.props;
+const { title, description, date, updatedDate, tags, heroImage, heroImageAlt, author } = post.data;
+const displayAuthor = resolveAuthorName(author);
+
+const formattedDate = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric', month: 'long', day: 'numeric'
+}).format(date);
+
+const updatedFormatted = updatedDate
+  ? new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(updatedDate)
+  : null;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  type="article"
+  publishedDate={date}
+  tags={tags}
+  author={displayAuthor}
+  image={heroImage}
+>
+  <div class="reading-progress" id="reading-progress" aria-hidden="true">
+    <div class="reading-progress__fill" id="reading-progress-fill"></div>
+  </div>
+
+  <!-- Hero -->
+  {heroImage && (
+    <div class="post-hero liquid-surface" data-article-hero>
+      <div class="container">
+        <img
+          src={heroImage}
+          alt={heroImageAlt ?? title}
+          class="post-hero__img"
+          data-article-hero-image
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+    </div>
+  )}
+
+  <!-- Article wrapper -->
+  <div class="post-page">
+    <div class="container">
+      <div class="post-layout">
+
+        <!-- Sidebar TOC -->
+        <aside class="post-sidebar" aria-label="Table of contents">
+          <TOC headings={headings} />
+        </aside>
+
+        <!-- Main content -->
+        <article class="post-main" itemscope itemtype="https://schema.org/BlogPosting">
+
+          <!-- Header -->
+          <header class="post-header reveal liquid-surface" data-article-header>
+            {tags.length > 0 && (
+              <div class="post-header__tags" aria-label="Post tags">
+                {tags.map(tag => (
+                  <a href={`/tags/${tag}`} class="tag">{tag}</a>
+                ))}
+              </div>
+            )}
+
+            <h1 class="post-header__title" itemprop="headline">{title}</h1>
+            <p class="post-header__description">{description}</p>
+
+            <div class="post-header__meta" aria-label="Post metadata">
+              <div class="post-header__author">
+                <div class="post-header__avatar" aria-hidden="true">
+                  {author?.slice(0, 2).toUpperCase() ?? 'D2'}
+                </div>
+                <div>
+                  <span class="post-header__author-name" itemprop="author">{displayAuthor}</span>
+                  <div class="post-header__dates">
+                    <time datetime={date.toISOString()} itemprop="datePublished">{formattedDate}</time>
+                    {updatedFormatted && (
+                      <span>· Updated <time datetime={updatedDate!.toISOString()} itemprop="dateModified">{updatedFormatted}</time></span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="post-header__owner">
+              <p class="post-header__owner-copy">{SITE_OWNER.shortBio}</p>
+              <div class="post-header__owner-links">
+                <a href={SITE_OWNER.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
+                <a href={SITE_OWNER.github} target="_blank" rel="noreferrer">GitHub</a>
+                <a href="/about">About</a>
+              </div>
+            </div>
+          </header>
+
+          <!-- Body -->
+          <div class="prose" itemprop="articleBody" id="post-body">
+            <slot />
+          </div>
+
+          <!-- Footer -->
+          <footer class="post-footer reveal liquid-surface" data-article-footer>
+            <div class="post-footer__actions">
+              <LikeButton postSlug={post.slug} initialLikes={0} />
+              <a href="/blog" class="btn btn-ghost">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                All Posts
+              </a>
+            </div>
+
+            {tags.length > 0 && (
+              <div class="post-footer__tags">
+                <span class="post-footer__tags-label font-mono">Tagged:</span>
+                {tags.map(tag => (
+                  <a href={`/tags/${tag}`} class="tag">{tag}</a>
+                ))}
+              </div>
+            )}
+          </footer>
+
+          <!-- Comments -->
+          <div class="post-comments reveal liquid-surface" data-article-comments>
+            <GiscusComments />
+          </div>
+
+        </article>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+.post-hero {
+  background: var(--bg-muted);
+  border-bottom: 1px solid var(--border);
+}
+.post-hero__img {
+  width: 100%;
+  max-height: 480px;
+  object-fit: cover;
+  display: block;
+}
+
+.post-page {
+  padding: var(--space-12) 0 var(--space-20);
+}
+
+.post-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: var(--space-12);
+  align-items: start;
+}
+
+.post-sidebar {
+  min-width: 0;
+  position: sticky;
+  top: calc(var(--nav-height) + var(--space-6));
+  align-self: start;
+  height: fit-content;
+}
+
+.post-main {
+  min-width: 0;
+  max-width: 800px;
+}
+
+/* Post header */
+.post-header {
+  margin-bottom: var(--space-12);
+  padding: var(--space-8);
+}
+
+.post-header__tags {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  line-height: 1;
+}
+
+.post-header__title {
+  font-size: clamp(var(--text-3xl), 4vw, var(--text-5xl));
+  line-height: 1.15;
+  margin-bottom: var(--space-4);
+  letter-spacing: -0.03em;
+}
+
+.post-header__description {
+  font-size: var(--text-xl);
+  color: var(--fg-muted);
+  line-height: 1.6;
+  margin-bottom: var(--space-6);
+  font-weight: 300;
+}
+
+.post-header__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.post-header__owner {
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid rgba(255,255,255,.1);
+}
+
+.post-header__owner-copy {
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  color: var(--fg-muted);
+}
+
+.post-header__owner-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.post-header__owner-links a {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.post-header__author {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.post-header__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent-subtle);
+  border: 1px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.post-header__author-name {
+  font-weight: 600;
+  font-size: var(--text-sm);
+  display: block;
+}
+
+.post-header__dates {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: var(--text-xs);
+  color: var(--fg-subtle);
+}
+
+/* Post footer */
+.post-footer {
+  margin-top: var(--space-16);
+  padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.post-footer__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.post-footer__tags {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.post-footer__tags-label {
+  font-size: var(--text-xs);
+  color: var(--fg-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.post-comments {
+  margin-top: var(--space-12);
+  padding: var(--space-8);
+}
+
+/* Code copy buttons in prose */
+.post-main :global(pre) {
+  position: relative;
+}
+
+@media (max-width: 1024px) {
+  .post-layout {
+    grid-template-columns: 1fr;
+  }
+  .post-sidebar {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .post-page { padding: var(--space-8) 0 var(--space-16); }
+  .post-header__title { font-size: var(--text-3xl); }
+  .post-header__description { font-size: var(--text-base); }
+  .post-header__meta { align-items: flex-start; }
+}
+</style>
+
+<script>
+  const bar = document.getElementById('reading-progress');
+  const fill = document.getElementById('reading-progress-fill');
+  const body = document.getElementById('post-body');
+
+  if (bar && fill && body) {
+    if (bar.parentElement !== document.body) {
+      document.body.appendChild(bar);
+    }
+
+    let ticking = false;
+
+    const update = () => {
+      const bodyRect = body.getBoundingClientRect();
+      const scrollTop = window.scrollY;
+      const start = scrollTop + bodyRect.top - window.innerHeight * 0.18;
+      const end = scrollTop + bodyRect.bottom - window.innerHeight * 0.58;
+      const totalDistance = Math.max(end - start, 1);
+      const progress = Math.min(100, Math.max(0, ((scrollTop - start) / totalDistance) * 100));
+
+      bar.style.setProperty('--reading-progress', `${progress}%`);
+      fill.style.width = `${progress}%`;
+      ticking = false;
+    };
+
+    const requestUpdate = () => {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(update);
+      }
+    };
+
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+    update();
+  }
+
+  // Code copy buttons
+  document.querySelectorAll('pre').forEach(pre => {
+    const code = pre.querySelector('code');
+    if (!code) return;
+
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.setAttribute('aria-label', 'Copy code');
+    btn.innerHTML = `
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copy`;
+    pre.style.position = 'relative';
+    pre.appendChild(btn);
+
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(code.textContent ?? '');
+        btn.classList.add('copied');
+        btn.innerHTML = `
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          Copied!`;
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = `
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy`;
+        }, 2000);
+      } catch {}
+    });
+  });
+</script>

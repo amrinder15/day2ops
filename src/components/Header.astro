@@ -1,0 +1,60 @@
+---
+const { pathname } = Astro.url;
+---
+<header class="site-header" id="site-header">
+  <div class="container">
+    <nav class="nav" aria-label="Main navigation">
+      <a href="/" class="nav__logo" aria-label="Day2Ops home">
+        <span>Day</span><span class="nav__logo-accent">2</span><span>Ops</span>
+      </a>
+      <ul class="nav__links" id="site-nav-links" role="list" data-open="false">
+        <li><a href="/" class={`nav__link ${pathname === '/' ? 'active' : ''}`} aria-current={pathname === '/' ? 'page' : undefined}>Home</a></li>
+        <li><a href="/blog" class={`nav__link ${pathname.startsWith('/blog') ? 'active' : ''}`} aria-current={pathname.startsWith('/blog') ? 'page' : undefined}>Blog</a></li>
+        <li><a href="/tags" class={`nav__link ${pathname.startsWith('/tags') ? 'active' : ''}`} aria-current={pathname.startsWith('/tags') ? 'page' : undefined}>Tags</a></li>
+        <li><a href="/about" class={`nav__link ${pathname.startsWith('/about') ? 'active' : ''}`} aria-current={pathname.startsWith('/about') ? 'page' : undefined}>About</a></li>
+      </ul>
+      <div class="nav__actions">
+        <button class="nav__menu-toggle" id="nav-menu-toggle" aria-label="Toggle navigation menu" aria-controls="site-nav-links" aria-expanded="false">
+          <span class="nav__menu-line"></span>
+          <span class="nav__menu-line"></span>
+          <span class="nav__menu-line"></span>
+        </button>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark/light mode">
+          <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </nav>
+  </div>
+</header>
+<script>
+  import { initHeaderScroll } from '../lib/animations/header-scroll';
+
+  initHeaderScroll();
+
+  const navToggle = document.getElementById('nav-menu-toggle');
+  const navLinks = document.getElementById('site-nav-links');
+
+  if (navToggle instanceof HTMLButtonElement && navLinks instanceof HTMLElement) {
+    const closeMenu = () => {
+      navLinks.dataset.open = 'false';
+      navToggle.setAttribute('aria-expanded', 'false');
+    };
+
+    navToggle.addEventListener('click', () => {
+      const isOpen = navLinks.dataset.open === 'true';
+      navLinks.dataset.open = isOpen ? 'false' : 'true';
+      navToggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+    });
+
+    navLinks.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', closeMenu);
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768) {
+        closeMenu();
+      }
+    });
+  }
+</script>

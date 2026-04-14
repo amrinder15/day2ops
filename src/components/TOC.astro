@@ -1,0 +1,60 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+}
+
+const { headings } = Astro.props;
+const filtered = headings.filter(h => h.depth >= 2 && h.depth <= 4);
+---
+
+{filtered.length > 0 && (
+  <nav class="toc liquid-surface" aria-label="Table of contents" id="toc" data-article-toc>
+    <p class="toc__title">On this page</p>
+    <ul class="toc__list" role="list">
+      {filtered.map(h => (
+        <li class={`toc__item toc__item--h${h.depth}`} data-heading={h.slug}>
+          <a href={`#${h.slug}`}>{h.text}</a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}
+
+<script>
+  // Scroll-spy with IntersectionObserver
+  const tocItems = document.querySelectorAll<HTMLElement>('.toc__item[data-heading]');
+  if (tocItems.length > 0) {
+    const headingEls = Array.from(tocItems).map(item => {
+      const slug = item.dataset.heading!;
+      return document.getElementById(slug);
+    }).filter(Boolean) as HTMLElement[];
+
+    let activeId: string | null = null;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            activeId = entry.target.id;
+          }
+        }
+        // Update active state
+        tocItems.forEach(item => {
+          item.classList.toggle('active', item.dataset.heading === activeId);
+        });
+      },
+      {
+        rootMargin: '-80px 0px -60% 0px',
+        threshold: 0,
+      }
+    );
+
+    headingEls.forEach(el => observer.observe(el));
+  }
+</script>

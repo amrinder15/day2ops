@@ -1,0 +1,91 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
+import SEO from '../components/SEO.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  type?: 'website' | 'article';
+  publishedDate?: Date;
+  tags?: string[];
+  author?: string;
+  canonicalURL?: string;
+}
+
+const {
+  title,
+  description,
+  image,
+  type = 'website',
+  publishedDate,
+  tags,
+  author,
+  canonicalURL,
+} = Astro.props;
+
+const pathname = Astro.url.pathname;
+const pageKind = pathname === '/'
+  ? 'home'
+  : pathname === '/blog' || pathname === '/blog/'
+    ? 'blog-index'
+    : pathname.startsWith('/blog/')
+      ? 'article'
+      : pathname.startsWith('/tags')
+        ? 'tags'
+        : 'default';
+---
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <script is:inline>
+    if (sessionStorage.getItem('day2ops:page-transition') === '1') {
+      document.documentElement.dataset.pageTransition = 'enter';
+    }
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="generator" content={Astro.generator} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <SEO
+    title={title}
+    description={description}
+    image={image}
+    type={type}
+    publishedDate={publishedDate}
+    tags={tags}
+    author={author}
+    canonicalURL={canonicalURL}
+  />
+
+  <!-- Theme init — must be first to prevent FOUC -->
+  <ThemeToggle />
+</head>
+<body data-page-kind={pageKind} data-route={pathname}>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <Header />
+  <div class="page-transition-layer" aria-hidden="true"></div>
+
+  <main id="main-content" data-page-shell style="padding-top: var(--nav-height);">
+    <slot />
+  </main>
+
+  <Footer />
+
+  <script>
+    import { initLiquidButtons } from '../lib/animations/liquid-buttons';
+    import { initPageAnimations } from '../lib/animations/page-animations';
+    import { initPageTransitions } from '../lib/animations/page-transitions';
+    import { initRevealAnimations } from '../lib/animations/reveal';
+
+    initLiquidButtons();
+    initPageAnimations();
+    initPageTransitions();
+    initRevealAnimations();
+  </script>
+</body>
+</html>

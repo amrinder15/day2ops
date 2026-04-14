@@ -1,0 +1,72 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('posts', p => !p.data.draft);
+  const tags = [...new Set(allPosts.flatMap(p => p.data.tags))];
+  return tags.map(tag => ({
+    params: { tag },
+    props: {
+      posts: allPosts
+        .filter(p => p.data.tags.includes(tag))
+        .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()),
+    },
+  }));
+}
+
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+---
+
+<BaseLayout
+  title={`#${tag}`}
+  description={`All posts tagged #${tag} on Day2Ops.`}
+>
+  <div class="tag-page">
+    <div class="container">
+      <header class="tag-header reveal">
+        <a href="/tags" class="tag-header__back font-mono">← All tags</a>
+        <div class="tag-header__label">
+          <span class="tag active" style="font-size:var(--text-base);padding:var(--space-2) var(--space-5);">{tag}</span>
+        </div>
+        <h1 class="tag-header__title">#{tag}</h1>
+        <p class="tag-header__sub" style="color:var(--fg-muted);font-size:var(--text-lg);font-weight:300;">
+          {posts.length} post{posts.length !== 1 ? 's' : ''}
+        </p>
+      </header>
+
+      <div class="posts-grid">
+        {posts.map((post, i) => (
+          <PostCard post={post} index={i} />
+        ))}
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+.tag-page { padding: var(--space-16) 0 var(--space-24); }
+.tag-header { margin-bottom: var(--space-10); }
+.tag-header__back {
+  display: inline-block;
+  font-size: var(--text-sm);
+  color: var(--fg-subtle);
+  text-decoration: none;
+  margin-bottom: var(--space-5);
+  transition: color var(--duration-fast);
+}
+.tag-header__back:hover { color: var(--accent); }
+.tag-header__label { margin-bottom: var(--space-4); }
+.tag-header__title {
+  font-size: clamp(var(--text-3xl), 4vw, var(--text-5xl));
+  letter-spacing: -0.04em;
+  margin-bottom: var(--space-2);
+}
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-6);
+}
+</style>

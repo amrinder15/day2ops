@@ -1,0 +1,231 @@
+---
+title: "Day 2 Operations: What No One Tells You About Running Kubernetes at Scale"
+description: "Deploying to Kubernetes is Day 0. Getting it to production is Day 1. Everything after that—the incidents, the toil, the invisible work that keeps the lights on—is Day 2. Here's what we learned the hard way."
+date: 2024-11-14
+tags: ["day2", "kubernetes", "sre", "platform", "observability"]
+heroAlt: "Abstract network topology diagram showing interconnected nodes"
+draft: false
+featured: true
+author: "Alex Rivera"
+---
+
+import { Image } from 'astro:assets';
+
+There's a joke in the platform engineering community: **Day 0** is when your CEO announces you're going cloud-native. **Day 1** is when you deploy your first workload to Kubernetes. **Day 2** is... everything else. Forever.
+
+Day 2 is where platforms go to die—not with a bang, but with a slow accumulation of alerts you've learned to ignore, runbooks no one reads, and on-call rotations that quietly grind down your best engineers.
+
+This post is about the things we got wrong, what we changed, and the operational patterns that finally made our platform feel *owned* rather than *survived*.
+
+---
+
+## The Illusion of "Done"
+
+When we launched our first production cluster, we felt accomplished. CI/CD pipelines were green. Services were deploying. The dashboards looked beautiful. We shipped a "Platform Launch" email to the org with a screenshot of Grafana.
+
+Three months later:
+
+- Our on-call rotation had a 60% alert fatigue rate
+- Two senior engineers had quietly updated their LinkedIn profiles
+- We had 14 versions of our Helm chart "standard" floating across 30 namespaces
+- Nobody could answer "what does a healthy cluster look like?" with confidence
+
+The platform wasn't broken. It was *unowned*. And unowned systems decay.
+
+---
+
+## Lesson 1: Alert on Symptoms, Not Causes
+
+The classic mistake: alerting on CPU usage, memory pressure, pod restarts—the *causes*. Your engineers wake up at 3am to an OOMKilled alert, spend 45 minutes investigating, find a memory leak in a service owned by another team, file a ticket, go back to sleep. Nothing actually broke for users.
+
+**The shift**: alert on user-visible symptoms first.
+
+```yaml
+# Good: symptom-based alerting
+- alert: PaymentAPIHighLatency
+  expr: |
+    histogram_quantile(0.99,
+      rate(http_request_duration_seconds_bucket{
+        job="payment-api",
+        route="/v2/charge"
+      }[5m])
+    ) > 2.0
+  for: 3m
+  labels:
+    severity: critical
+    team: payments
+  annotations:
+    summary: "Payment API p99 latency above 2s"
+    runbook_url: "https://runbooks.internal/payment-api-latency"
+    dashboard_url: "https://grafana.internal/d/payment-api"
+
+# Noisy: cause-based alerting (demote to warning or remove)
+# - alert: PaymentAPIPodRestarts
+#   expr: kube_pod_container_status_restarts_total{namespace="payments"} > 3
+```
+
+We went from 140 weekly alerts to 28 by applying this filter aggressively. On-call quality of life improved overnight.
+
+> **Rule of thumb**: If an alert fires and your first action is to look at another dashboard to decide if you should care—that alert should not page you at 2am.
+
+---
+
+## Lesson 2: Standardize Before You Scale
+
+At 5 services, inconsistency is annoying. At 50, it's catastrophic.
+
+Our problem was *flexibility debt*. Teams had freedom to structure their Helm values however they wanted. Reasonable at the time. By the time we needed to roll out a security patch across all services, we had 12 different patterns for `securityContext` alone.
+
+We introduced a **Platform Contract**: a minimal set of opinions that every service must implement to run on the platform.
+
+```yaml
+# platform-contract/values-schema.json (simplified)
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "required": ["service", "image", "resources", "probes"],
+  "properties": {
+    "service": {
+      "required": ["name", "owner", "tier"],
+      "properties": {
+        "tier": { "enum": ["critical", "standard", "batch"] }
+      }
+    },
+    "resources": {
+      "required": ["requests", "limits"],
+      "properties": {
+        "requests": {
+          "required": ["cpu", "memory"]
+        }
+      }
+    },
+    "probes": {
+      "required": ["liveness", "readiness"]
+    }
+  }
+}
+```
+
+Validation runs in CI. Non-compliant charts fail the pipeline. The contract is *infrastructure as policy*, not infrastructure as hope.
+
+---
+
+## Lesson 3: Make Toil Visible
+
+Toil is the silent killer of platform teams. It's the manual steps, the copy-paste runbooks, the "just this once" interventions that somehow become permanent.
+
+We started measuring it. Every on-call engineer logs toil items in a weekly retro doc using a simple format:
+
+| Task | Time Spent | Automatable? | Ticket |
+|------|-----------|-------------|--------|
+| Manually rotated cert for legacy-api | 35 min | Yes | PLAT-441 |
+| Cleaned up orphaned PVs in staging | 20 min | Yes | PLAT-442 |
+| Answered "how do I set resource limits?" | 15 min | Docs | PLAT-443 |
+
+After two months of tracking, our toil breakdown was:
+
+- **42%** — certificate management (manual rotation, missing automation)
+- **28%** — undocumented runbooks answered via Slack DMs
+- **19%** — resource quota cleanup
+- **11%** — everything else
+
+We automated cert-manager with external-secrets integration, wrote the top 20 runbooks, and set up a quarterly quota review job. Toil dropped by 60% in a quarter.
+
+---
+
+## Lesson 4: Observability is a Product, Not Infrastructure
+
+We made the mistake of treating observability as an infrastructure concern—"we have Prometheus and Grafana, we're done."
+
+But if your dashboards only work for the people who built them, you don't have observability. You have *surveillance for experts*.
+
+**What we built instead:**
+
+```typescript
+// Service health scorecard — auto-generated from SLO configs
+interface ServiceHealthcard {
+  service: string;
+  tier: 'critical' | 'standard' | 'batch';
+  slos: {
+    availability: { target: number; current: number; errorBudgetRemaining: number };
+    latencyP99:   { targetMs: number; currentMs: number };
+    errorRate:    { target: number; current: number };
+  };
+  oncall:    string;
+  runbookUrl: string;
+  chatChannel: string;
+}
+```
+
+Every service has a scorecard. Scorecards are linked from deployment manifests. When an incident happens, the first responder has everything they need in one URL—not five.
+
+We also introduced **SLO-based alerting** instead of threshold-based:
+
+```yaml
+# Burn rate alert — much more actionable than raw error rate
+- alert: HighErrorBudgetBurn
+  expr: |
+    (
+      rate(http_requests_total{status=~"5.."}[1h])
+      /
+      rate(http_requests_total[1h])
+    ) > (14.4 * 0.001)  # 14.4x burn rate for 1% error budget
+  annotations:
+    summary: "Error budget burning fast — will exhaust in < 3 days"
+```
+
+---
+
+## Lesson 5: The Upgrade Treadmill is Real
+
+Kubernetes releases every four months. Each EKS/GKE/AKS version is supported for roughly 14 months. If you're not running a structured upgrade program, you're always behind, always in a rush, and always taking on more risk than necessary.
+
+Our upgrade cadence:
+
+1. **N+1 shadow cluster** — run the next minor version in staging with 10% traffic mirrored
+2. **Feature flag gate** — any API deprecations gated behind feature flags during migration window
+3. **Automated upgrade checks** — CI runs `pluto` and `kube-no-trouble` (kubent) on every PR
+
+```bash
+#!/bin/bash
+# upgrade-preflight.sh — runs before every minor version bump
+
+echo "=== Checking for deprecated API versions ==="
+pluto detect-helm -n default --target-versions k8s=v1.32 --output wide
+
+echo "=== Checking cluster for deprecated APIs ==="
+kubent --target-version 1.32 --exit-code
+
+echo "=== Checking node group versions ==="
+kubectl get nodes -o custom-columns='NAME:.metadata.name,VERSION:.status.nodeInfo.kubeletVersion'
+```
+
+The result: we've stayed within one minor version of latest for 18 months with zero unplanned upgrade incidents.
+
+---
+
+## What "Good" Actually Looks Like
+
+After two years of iteration, here's our Day 2 north star:
+
+**A healthy platform means:**
+- Any engineer can deploy, debug, and roll back their service without paging the platform team
+- On-call responders spend < 30 min per week on reactive toil
+- Every service has an owner, an SLO, and a runbook
+- Upgrades are boring and scheduled, not urgent and chaotic
+- New engineers are productive on Day 1 (yes, actual Day 1)
+
+None of these are technical achievements. They're **cultural and operational** ones. The technology is mostly solved. The hard part is the discipline to maintain it.
+
+---
+
+## The Honest Truth
+
+Day 2 operations never ends. The goal isn't to finish—it's to make the ongoing work *sustainable*, *visible*, and *owned*. 
+
+The best platform teams we've worked with don't have fewer problems than everyone else. They have better systems for catching problems early, clearer ownership, and—critically—they've made the work of maintaining the platform feel like progress, not punishment.
+
+That's what Day 2 can look like. It takes time to get there. But it's worth it.
+
+---
+
+*Got your own Day 2 war stories? Open a Discussion below—we read every one.*

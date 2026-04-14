@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="404 — Not Found" description="Page not found.">
+  <div style="min-height:60vh;display:flex;align-items:center;justify-content:center;padding:var(--space-20) 0;">
+    <div style="text-align:center;max-width:480px;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:6rem;font-weight:500;color:var(--border);line-height:1;margin-bottom:var(--space-6);">404</div>
+      <h1 style="font-size:var(--text-2xl);margin-bottom:var(--space-4);">Page not found</h1>
+      <p style="color:var(--fg-muted);margin-bottom:var(--space-8);">This page doesn't exist — or it was moved. Either way, the cluster is fine.</p>
+      <div style="display:flex;gap:var(--space-3);justify-content:center;flex-wrap:wrap;">
+        <a href="/" class="btn btn-primary">Go home</a>
+        <a href="/blog" class="btn btn-ghost">Browse posts</a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

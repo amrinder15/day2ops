@@ -1,0 +1,215 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('posts', p => !p.data.draft);
+const sorted = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const allTags = [...new Set(sorted.flatMap(p => p.data.tags))].sort();
+---
+
+<BaseLayout
+  title="Blog"
+  description="All posts on platform engineering, Kubernetes, SRE, GitOps, and observability."
+>
+  <div class="blog-page" data-blog-page>
+    <div class="container">
+
+      <!-- Page header -->
+      <header class="blog-header reveal" data-blog-header>
+        <div class="blog-header__eyebrow liquid-chip active">All posts</div>
+        <h1 class="blog-header__title">The Blog</h1>
+        <p class="blog-header__sub">
+          {sorted.length} article{sorted.length !== 1 ? 's' : ''} on platform engineering, Kubernetes, SRE, and what happens when theory meets production.
+        </p>
+      </header>
+
+      <!-- Tag filters -->
+      {allTags.length > 0 && (
+        <div class="blog-filters reveal" data-blog-filters role="navigation" aria-label="Filter by tag">
+          <a href="/blog" class="tag active" data-blog-filter="all">All</a>
+          {allTags.map(tag => (
+            <a href={`/blog?tag=${tag}`} class="tag" data-blog-filter={tag.toLowerCase()}>{tag}</a>
+          ))}
+        </div>
+      )}
+
+      <!-- Results count -->
+      <div class="blog-results-count reveal" data-blog-results-count hidden>
+        <span class="font-mono" style="font-size:var(--text-sm);color:var(--fg-subtle);">
+          Showing <span data-blog-results-total>{sorted.length}</span> post<span data-blog-results-plural>s</span> tagged <strong style="color:var(--accent);">#<span data-blog-results-tag></span></strong>
+          — <a href="/blog" style="color:var(--fg-muted);text-decoration:underline;text-underline-offset:2px;" data-blog-clear>clear filter</a>
+        </span>
+      </div>
+
+      <!-- Posts grid -->
+      <div class="blog-grid" data-blog-grid>
+        {sorted.map((post, i) => (
+          <PostCard post={post} index={i} />
+        ))}
+      </div>
+
+      <div class="blog-empty reveal liquid-surface" data-blog-empty role="status" hidden>
+        <div class="blog-empty__icon" aria-hidden="true">📭</div>
+        <h2>No posts found</h2>
+        <p>No posts tagged <strong>#<span data-blog-empty-tag></span></strong> yet.</p>
+        <a href="/blog" class="btn btn-primary" data-blog-empty-clear>View all posts</a>
+      </div>
+
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+.blog-page {
+  padding: var(--space-16) 0 var(--space-24);
+}
+
+.blog-header {
+  max-width: 720px;
+  margin-bottom: var(--space-10);
+}
+
+.blog-header__eyebrow {
+  display: inline-flex;
+  margin-bottom: var(--space-3);
+}
+
+.blog-header__title {
+  font-size: clamp(var(--text-4xl), 5vw, var(--text-6xl));
+  margin-bottom: var(--space-4);
+  letter-spacing: -0.04em;
+}
+
+.blog-header__sub {
+  font-size: var(--text-lg);
+  color: var(--fg-muted);
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+.blog-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-8);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.blog-results-count {
+  margin-bottom: var(--space-6);
+}
+
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-6);
+}
+
+.blog-empty {
+  text-align: center;
+  padding: var(--space-16);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.blog-empty__icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-2);
+}
+
+.blog-empty h2 {
+  font-size: var(--text-2xl);
+}
+
+.blog-empty p {
+  color: var(--fg-muted);
+  font-size: var(--text-lg);
+}
+</style>
+
+<script>
+  const blogPage = document.querySelector('[data-blog-page]');
+
+  if (blogPage instanceof HTMLElement) {
+    const cards = Array.from(blogPage.querySelectorAll('[data-post-card]'));
+    const filters = Array.from(blogPage.querySelectorAll('[data-blog-filter]'));
+    const resultsCount = blogPage.querySelector('[data-blog-results-count]');
+    const resultsTotal = blogPage.querySelector('[data-blog-results-total]');
+    const resultsPlural = blogPage.querySelector('[data-blog-results-plural]');
+    const resultsTag = blogPage.querySelector('[data-blog-results-tag]');
+    const emptyState = blogPage.querySelector('[data-blog-empty]');
+    const emptyTag = blogPage.querySelector('[data-blog-empty-tag]');
+    const clearLinks = Array.from(blogPage.querySelectorAll('[data-blog-clear], [data-blog-empty-clear]'));
+
+    const readCurrentTag = () => new URLSearchParams(window.location.search).get('tag')?.toLowerCase() ?? null;
+
+    const applyFilter = (tag) => {
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const tagList = (card.getAttribute('data-post-tags') ?? '').split('|').filter(Boolean);
+        const matches = !tag || tagList.includes(tag);
+        card.toggleAttribute('hidden', !matches);
+        if (matches) visibleCount += 1;
+      });
+
+      filters.forEach((filter) => {
+        const filterTag = filter.getAttribute('data-blog-filter');
+        const isActive = (tag === null && filterTag === 'all') || filterTag === tag;
+        filter.classList.toggle('active', isActive);
+      });
+
+      if (resultsCount instanceof HTMLElement && resultsTotal instanceof HTMLElement && resultsPlural instanceof HTMLElement && resultsTag instanceof HTMLElement) {
+        resultsCount.hidden = !tag;
+        resultsTotal.textContent = String(visibleCount);
+        resultsPlural.textContent = visibleCount === 1 ? '' : 's';
+        resultsTag.textContent = tag ?? '';
+      }
+
+      if (emptyState instanceof HTMLElement && emptyTag instanceof HTMLElement) {
+        emptyState.hidden = visibleCount > 0 || !tag;
+        emptyTag.textContent = tag ?? '';
+      }
+    };
+
+    const updateUrl = (tag) => {
+      const next = new URL(window.location.href);
+      if (tag) {
+        next.searchParams.set('tag', tag);
+      } else {
+        next.searchParams.delete('tag');
+      }
+      window.history.pushState({}, '', `${next.pathname}${next.search}${next.hash}`);
+    };
+
+    filters.forEach((filter) => {
+      filter.addEventListener('click', (event) => {
+        event.preventDefault();
+        const nextTag = filter.getAttribute('data-blog-filter');
+        const tag = !nextTag || nextTag === 'all' ? null : nextTag;
+        updateUrl(tag);
+        applyFilter(tag);
+      });
+    });
+
+    clearLinks.forEach((link) => {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        updateUrl(null);
+        applyFilter(null);
+      });
+    });
+
+    window.addEventListener('popstate', () => {
+      applyFilter(readCurrentTag());
+    });
+
+    applyFilter(readCurrentTag());
+  }
+</script>

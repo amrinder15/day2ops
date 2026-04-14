@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('posts', p => !p.data.draft);
+const tagCounts: Record<string, number> = {};
+
+for (const post of allPosts) {
+  for (const tag of post.data.tags) {
+    tagCounts[tag] = (tagCounts[tag] ?? 0) + 1;
+  }
+}
+
+const sortedTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
+---
+
+<BaseLayout title="Tags" description="Browse all topics covered on Day2Ops.">
+  <div class="tags-page">
+    <div class="container">
+      <header class="tags-header reveal">
+        <div class="tags-header__eyebrow liquid-chip active">Browse by topic</div>
+        <h1 style="letter-spacing:-0.04em;margin-bottom:var(--space-4);">Tags</h1>
+        <p style="font-size:var(--text-lg);color:var(--fg-muted);font-weight:300;">{sortedTags.length} topics across {allPosts.length} posts.</p>
+      </header>
+
+      <div class="tags-grid reveal">
+        {sortedTags.map(([tag, count]) => (
+          <a href={`/tags/${tag}`} class="tag-card">
+            <span class="tag-card__name">{tag}</span>
+            <span class="tag-card__count liquid-chip liquid-chip--muted">{count}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+.tags-page { padding: var(--space-16) 0 var(--space-24); }
+.tags-header { margin-bottom: var(--space-12); }
+.tags-header__eyebrow { display: inline-flex; margin-bottom: var(--space-3); }
+.tags-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-4);
+}
+.tag-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  background: var(--bg-overlay);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  transition: all var(--duration-base) var(--ease-out);
+}
+.tag-card:hover {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.tag-card__name {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: var(--text-sm);
+  color: var(--fg-base);
+  font-weight: 500;
+}
+.tag-card:hover .tag-card__name { color: var(--accent); }
+.tag-card__count {
+  min-width: 28px;
+  text-align: center;
+}
+.tag-card:hover .tag-card__count {
+  color: var(--accent);
+}
+</style>

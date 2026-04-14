@@ -1,0 +1,121 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE_OWNER } from '../lib/site';
+---
+
+<BaseLayout
+  title="About"
+  description="About Amrinder Rattanpal and the Day2Ops blog."
+>
+  <div class="about-page">
+    <div class="container">
+      <section class="about-hero reveal liquid-surface">
+        <span class="about-hero__eyebrow liquid-chip active">About the author</span>
+        <h1 class="about-hero__title">{SITE_OWNER.name}</h1>
+        <p class="about-hero__lead">{SITE_OWNER.role}</p>
+        <div class="about-hero__actions">
+          <a href={SITE_OWNER.linkedin} class="btn btn-primary" target="_blank" rel="noreferrer">LinkedIn</a>
+          <a href={SITE_OWNER.github} class="btn btn-ghost" target="_blank" rel="noreferrer">GitHub</a>
+        </div>
+      </section>
+
+      <div class="about-grid">
+        <section class="about-copy reveal reveal-delay-1">
+          <h2>Why Day2Ops exists</h2>
+          <p>Day2Ops is where I write about the operational reality that starts after the first deployment. The focus is platform engineering, Kubernetes, GitOps, reliability, and the decisions teams make when systems have to keep working under pressure.</p>
+          <p>The site is intentionally practical. It is not meant to be a personal brand page or a collection of generic cloud advice. The goal is to publish ideas, patterns, and lessons that are useful to engineers responsible for real production systems.</p>
+        </section>
+
+        <aside class="about-card reveal reveal-delay-2 liquid-surface">
+          <h2>What you will find here</h2>
+          <ul>
+            <li>Platform design decisions that affect delivery speed and operational safety.</li>
+            <li>Kubernetes and GitOps patterns that hold up beyond the demo stage.</li>
+            <li>Write-ups grounded in day-to-day engineering work rather than abstract theory.</li>
+          </ul>
+        </aside>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+.about-page {
+  padding: var(--space-16) 0 var(--space-24);
+}
+
+.about-hero {
+  padding: var(--space-10);
+  margin-bottom: var(--space-12);
+}
+
+.about-hero__eyebrow {
+  display: inline-flex;
+  margin-bottom: var(--space-4);
+}
+
+.about-hero__title {
+  font-size: clamp(var(--text-4xl), 5vw, var(--text-6xl));
+  margin-bottom: var(--space-4);
+}
+
+.about-hero__lead {
+  max-width: 58ch;
+  font-size: var(--text-lg);
+  line-height: 1.8;
+  color: rgba(244,239,232,.82);
+}
+
+.about-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(18rem, 1fr);
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.about-copy h2,
+.about-card h2 {
+  margin-bottom: var(--space-4);
+}
+
+.about-copy p {
+  max-width: 62ch;
+  color: var(--fg-muted);
+  font-size: var(--text-lg);
+  line-height: 1.8;
+}
+
+.about-card {
+  padding: var(--space-8);
+}
+
+.about-card ul {
+  margin: 0;
+  padding-left: var(--space-5);
+  display: grid;
+  gap: var(--space-3);
+}
+
+.about-card li {
+  color: rgba(244,239,232,.84);
+}
+
+@media (max-width: 900px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .about-hero {
+    padding: var(--space-8);
+  }
+}
+</style>

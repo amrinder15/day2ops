@@ -1,0 +1,139 @@
+---
+const giscusConfig = {
+  repo: import.meta.env.PUBLIC_GISCUS_REPO,
+  repoId: import.meta.env.PUBLIC_GISCUS_REPO_ID,
+  category: import.meta.env.PUBLIC_GISCUS_CATEGORY,
+  categoryId: import.meta.env.PUBLIC_GISCUS_CATEGORY_ID,
+  mapping: import.meta.env.PUBLIC_GISCUS_MAPPING ?? 'pathname',
+  strict: import.meta.env.PUBLIC_GISCUS_STRICT ?? '1',
+  reactionsEnabled: import.meta.env.PUBLIC_GISCUS_REACTIONS_ENABLED ?? '1',
+  inputPosition: import.meta.env.PUBLIC_GISCUS_INPUT_POSITION ?? 'top',
+  lang: import.meta.env.PUBLIC_GISCUS_LANG ?? 'en',
+};
+
+const missingConfig = [
+  ['PUBLIC_GISCUS_REPO', giscusConfig.repo],
+  ['PUBLIC_GISCUS_REPO_ID', giscusConfig.repoId],
+  ['PUBLIC_GISCUS_CATEGORY', giscusConfig.category],
+  ['PUBLIC_GISCUS_CATEGORY_ID', giscusConfig.categoryId],
+].filter(([, value]) => !value).map(([key]) => key);
+
+const isConfigured = missingConfig.length === 0;
+---
+
+<section class="comments-section" aria-label="Comments">
+  <h2 class="comments-title">Discussion</h2>
+
+  {isConfigured ? (
+    <div
+      id="giscus-container"
+      class="comments-shell"
+      data-repo={giscusConfig.repo}
+      data-repo-id={giscusConfig.repoId}
+      data-category={giscusConfig.category}
+      data-category-id={giscusConfig.categoryId}
+      data-mapping={giscusConfig.mapping}
+      data-strict={giscusConfig.strict}
+      data-reactions-enabled={giscusConfig.reactionsEnabled}
+      data-input-position={giscusConfig.inputPosition}
+      data-lang={giscusConfig.lang}
+    ></div>
+  ) : (
+    <div class="comments-shell comments-shell--empty">
+      <p class="comments-empty__lead">Comments are ready to be powered by GitHub Discussions.</p>
+      <p class="comments-empty__copy">Add the missing Giscus values to your local env file to turn comments on:</p>
+      <code class="comments-empty__vars">{missingConfig.join('\n')}</code>
+    </div>
+  )}
+</section>
+
+<style>
+.comments-title {
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-6);
+}
+
+.comments-shell {
+  min-height: 200px;
+  background: var(--bg-overlay);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+}
+
+.comments-shell--empty {
+  display: grid;
+  gap: var(--space-3);
+  place-items: start;
+}
+
+.comments-empty__lead {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: var(--text-sm);
+  color: var(--fg-base);
+}
+
+.comments-empty__copy {
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+}
+
+.comments-empty__vars {
+  display: block;
+  width: 100%;
+  white-space: pre-wrap;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: var(--text-xs);
+  line-height: 1.7;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  color: var(--fg-base);
+}
+</style>
+
+<script>
+  const container = document.getElementById('giscus-container');
+
+  if (container instanceof HTMLElement && !container.dataset.loaded) {
+    const getGiscusTheme = () => document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark_dimmed' : 'light';
+
+    const syncGiscusTheme = () => {
+      const iframe = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
+      iframe?.contentWindow?.postMessage(
+        { giscus: { setConfig: { theme: getGiscusTheme() } } },
+        'https://giscus.app'
+      );
+    };
+
+    const script = document.createElement('script');
+    script.src = 'https://giscus.app/client.js';
+    script.async = true;
+    script.crossOrigin = 'anonymous';
+    script.setAttribute('data-repo', container.dataset.repo ?? '');
+    script.setAttribute('data-repo-id', container.dataset.repoId ?? '');
+    script.setAttribute('data-category', container.dataset.category ?? '');
+    script.setAttribute('data-category-id', container.dataset.categoryId ?? '');
+    script.setAttribute('data-mapping', container.dataset.mapping ?? 'pathname');
+    script.setAttribute('data-strict', container.dataset.strict ?? '1');
+    script.setAttribute('data-reactions-enabled', container.dataset.reactionsEnabled ?? '1');
+    script.setAttribute('data-emit-metadata', '0');
+    script.setAttribute('data-input-position', container.dataset.inputPosition ?? 'top');
+    script.setAttribute('data-theme', getGiscusTheme());
+    script.setAttribute('data-lang', container.dataset.lang ?? 'en');
+    script.setAttribute('data-loading', 'lazy');
+
+    container.appendChild(script);
+    container.dataset.loaded = 'true';
+
+    const observer = new MutationObserver(syncGiscusTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+
+    window.addEventListener('astro:before-swap', () => observer.disconnect(), { once: true });
+    window.setTimeout(syncGiscusTheme, 250);
+  }
+</script>

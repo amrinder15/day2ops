@@ -1,0 +1,62 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+  featured?: boolean;
+  index?: number;
+}
+
+const { post, featured = false, index = 0 } = Astro.props;
+const { title, description, date, tags, heroImage, heroImageAlt } = post.data;
+
+const formattedDate = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric', month: 'short', day: 'numeric'
+}).format(date);
+
+// Reading time estimate
+const wordsPerMin = 200;
+// We can't access body here in a type-safe way, so use a placeholder
+const readingTime = '8 min read';
+---
+
+<a
+  href={`/blog/${post.slug}`}
+  class={`post-card reveal reveal-delay-${(index % 4) + 1} ${featured ? 'post-card--featured liquid-surface liquid-surface--interactive' : ''}`}
+  aria-label={`Read: ${title}`}
+  data-post-card
+  data-post-tags={tags.map((tag) => tag.toLowerCase()).join('|')}
+>
+  <div class="post-card__hero">
+    {heroImage ? (
+      <img src={heroImage} alt={heroImageAlt ?? title} loading="lazy" decoding="async" />
+    ) : (
+      <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="800" height="450" fill="var(--bg-muted)"/>
+        <text x="400" y="200" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="64" fill="var(--accent)" opacity="0.3">D2O</text>
+        {tags.slice(0,2).map((tag, i) => (
+          <text x="400" y={260 + i * 32} text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="14" fill="var(--fg-subtle)" opacity="0.6">{tag}</text>
+        ))}
+      </svg>
+    )}
+  </div>
+
+  <div class="post-card__body">
+    <div class="post-card__meta">
+      <time datetime={date.toISOString()}>{formattedDate}</time>
+      <span aria-hidden="true">·</span>
+      <span>{readingTime}</span>
+    </div>
+
+    <h3 class="post-card__title">{title}</h3>
+    <p class="post-card__description">{description}</p>
+
+    {tags.length > 0 && (
+      <div class="post-card__tags" aria-label="Tags">
+        {tags.slice(0, 3).map(tag => (
+          <span class="tag" aria-label={`Tag: ${tag}`}>{tag}</span>
+        ))}
+      </div>
+    )}
+  </div>
+</a>

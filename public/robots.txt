@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://day2ops.dev/sitemap-index.xml

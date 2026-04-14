@@ -1,0 +1,43 @@
+---
+import { SITE_OWNER } from '../lib/site';
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <a href="/" class="nav__logo" style="text-decoration:none;">
+          <span>Day</span><span class="nav__logo-accent">2</span><span>Ops</span>
+        </a>
+        <p>Day2Ops is written by {SITE_OWNER.name}. Engineering insights for teams that run platforms in production, grounded in real operational work.</p>
+        <div class="footer__owner-links">
+          <a href="/about">About</a>
+          <a href={SITE_OWNER.github} target="_blank" rel="noreferrer">GitHub</a>
+          <a href={SITE_OWNER.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
+        </div>
+      </div>
+      <div class="footer__col">
+        <h4>Navigate</h4>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/blog">All Posts</a></li>
+          <li><a href="/tags">Tags</a></li>
+          <li><a href="/about">About</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Topics</h4>
+        <ul>
+          <li><a href="/tags/kubernetes">Kubernetes</a></li>
+          <li><a href="/tags/platform">Platform Eng</a></li>
+          <li><a href="/tags/sre">SRE</a></li>
+          <li><a href="/tags/observability">Observability</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© {year} Day2Ops by {SITE_OWNER.name}</span>
+      <span>No fluff. Just ops.</span>
+    </div>
+  </div>
+</footer>

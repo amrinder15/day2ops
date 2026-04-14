@@ -1,0 +1,80 @@
+---
+interface Props {
+  postSlug: string;
+  initialLikes?: number;
+}
+const { postSlug, initialLikes = 0 } = Astro.props;
+---
+
+<button
+  class="like-btn"
+  id={`like-btn-${postSlug}`}
+  aria-label="Like this post"
+  data-slug={postSlug}
+  data-initial={initialLikes}
+>
+  <svg class="like-btn__heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+  </svg>
+  <span class="like-btn__count" aria-live="polite">{initialLikes}</span>
+</button>
+
+<script>
+  import { gsap } from 'gsap';
+
+  const btns = document.querySelectorAll<HTMLButtonElement>('.like-btn');
+  btns.forEach(btn => {
+    const slug = btn.dataset.slug!;
+    const key = `liked:${slug}`;
+    let count = parseInt(btn.dataset.initial ?? '0', 10);
+    const countEl = btn.querySelector('.like-btn__count')!;
+    const heartEl = btn.querySelector('.like-btn__heart') as SVGElement;
+
+    // Restore liked state
+    if (localStorage.getItem(key) === '1') {
+      btn.classList.add('liked');
+      heartEl.setAttribute('fill', 'currentColor');
+    }
+
+    btn.addEventListener('click', () => {
+      const isLiked = btn.classList.contains('liked');
+      if (isLiked) {
+        btn.classList.remove('liked');
+        heartEl.setAttribute('fill', 'none');
+        count = Math.max(0, count - 1);
+        localStorage.removeItem(key);
+      } else {
+        btn.classList.add('liked');
+        heartEl.setAttribute('fill', 'currentColor');
+        count++;
+        localStorage.setItem(key, '1');
+      }
+
+      gsap.fromTo(btn,
+        { scale: 0.96, y: 0 },
+        {
+          scale: 1.08,
+          y: -6,
+          duration: 0.18,
+          ease: 'power2.out',
+          yoyo: true,
+          repeat: 1,
+        }
+      );
+
+      gsap.fromTo(heartEl,
+        { scale: 1, rotate: 0 },
+        {
+          scale: 1.24,
+          rotate: isLiked ? -8 : 8,
+          duration: 0.22,
+          ease: 'back.out(2.4)',
+          yoyo: true,
+          repeat: 1,
+        }
+      );
+
+      countEl.textContent = String(count);
+    });
+  });
+</script>
