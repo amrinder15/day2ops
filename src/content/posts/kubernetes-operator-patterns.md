@@ -3,8 +3,11 @@ title: "Kubernetes Operator Patterns That Don't Bite You Later"
 description: "Building your first controller is easy. Building one that survives a year of production — without memory leaks, reconciliation storms, or impossible-to-debug state — is what this post is about."
 date: 2024-09-10
 tags: ["kubernetes", "operators", "golang", "platform"]
-featured: false
-author: "Day2Ops"
+heroImage: "/images/k8s-op-best-practice.png"
+heroImageAlt: "Kubernetes operator showing best practices for status conditions, finalizers, and reconciliation patterns"
+heroImageFit: "contain"
+readingTime: 3
+author: "Amrinder Rattanpal"
 ---
 
 When you build your first Kubernetes operator with `operator-sdk`, the sample controller works. The reconciler fires. The status condition updates. You merge the PR feeling like a wizard.

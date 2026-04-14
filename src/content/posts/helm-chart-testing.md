@@ -3,8 +3,11 @@ title: "Testing Helm Charts Like You Mean It"
 description: "Unit tests, schema validation, integration tests with kind, and golden-file rendering tests. A complete testing pyramid for Helm charts that catches real bugs before they reach your cluster."
 date: 2024-08-05
 tags: ["helm", "kubernetes", "testing", "gitops", "platform"]
-featured: false
-author: "Day2Ops"
+heroImage: "/images/hero-helm-testing.png"
+heroImageAlt: "Helm testing dashboard with rendered chart layers and validation checks"
+heroImageFit: "contain"
+readingTime: 2
+author: "Amrinder Rattanpal"
 ---
 
 Most Helm chart testing stops at `helm lint`. Lint checks syntax. It does not check that your `Values` schema is enforced, that your RBAC bindings are correct, or that a HPA and a VPA on the same Deployment don't create thrashing.

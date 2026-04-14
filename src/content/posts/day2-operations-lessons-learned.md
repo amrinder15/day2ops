@@ -3,10 +3,11 @@ title: "Day 2 Operations: What Nobody Tells You About Running a Platform at Scal
 description: "You shipped the platform. Kubernetes is running, Terraform state is clean, and the dashboards look green. Then Monday happens. This is everything we learned the hard way about operating infrastructure after go-live."
 date: 2024-11-15
 tags: ["day2", "platform", "kubernetes", "sre", "observability"]
-heroImage: "/images/hero-day2.svg"
-heroImageAlt: "Abstract infrastructure topology diagram"
-featured: true
-author: "Day2Ops"
+heroImage: "/images/hero-day2-operations-scale.svg"
+heroImageAlt: "Day 2 platform operations dashboard showing incidents, runbooks, capacity, and observability signals"
+heroImageFit: "contain"
+readingTime: 5
+author: "Amrinder Rattanpal"
 ---
 
 Everyone talks about Day 0 and Day 1. The architecture diagrams. The Terraform modules. The Helm chart refactoring. The three-week sprint to get Kubernetes "production-ready."
@@ -73,7 +74,7 @@ Six months in, you realize they tell you what broke — not why, and not what's 
 The metrics that actually saved us during incidents:
 
 | Metric | Why It Matters |
-|---|---|
+| --- | --- |
 | `kube_pod_container_resource_limits` vs actual usage | Sizing drift — teams over-request by 300% on average |
 | `etcd_request_duration_seconds_bucket` p99 | First signal before the API server starts degrading |
 | `container_oom_events_total` | Silent memory pressure that never pages |
@@ -167,11 +168,13 @@ The failure mode we see most often: postmortems that become blame documents. The
 What changed our postmortems:
 
 **Old structure:**
+
 1. Timeline
 2. Root cause
 3. Action items
 
 **New structure:**
+
 1. What did the system do? (not: what did the person do)
 2. What did humans learn _during_ the incident that they didn't know before?
 3. What made this harder to diagnose than it should have been?
@@ -188,6 +191,7 @@ Day 2 never ends. That's not a depressing thought — it's the actual job. Platf
 The teams we've seen succeed at Day 2 share one trait: they treat operations as a first-class engineering discipline, not a tax on "real work."
 
 If you're early in your Day 2 journey, start here:
+
 1. Make your runbooks executable scripts
 2. Add blast-radius annotations to every workload
 3. Measure your toil ratio this week

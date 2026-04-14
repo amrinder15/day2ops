@@ -8,16 +8,13 @@ interface Props {
 }
 
 const { post, featured = false, index = 0 } = Astro.props;
-const { title, description, date, tags, heroImage, heroImageAlt } = post.data;
+const { title, description, date, tags, heroImage, heroImageAlt, heroImageFit, readingTime } = post.data;
 
 const formattedDate = new Intl.DateTimeFormat('en-US', {
   year: 'numeric', month: 'short', day: 'numeric'
 }).format(date);
 
-// Reading time estimate
-const wordsPerMin = 200;
-// We can't access body here in a type-safe way, so use a placeholder
-const readingTime = '8 min read';
+const readingTimeLabel = `${readingTime ?? 8} min read`;
 ---
 
 <a
@@ -27,7 +24,7 @@ const readingTime = '8 min read';
   data-post-card
   data-post-tags={tags.map((tag) => tag.toLowerCase()).join('|')}
 >
-  <div class="post-card__hero">
+  <div class={`post-card__hero ${heroImageFit === 'contain' ? 'post-card__hero--contain' : ''}`}>
     {heroImage ? (
       <img src={heroImage} alt={heroImageAlt ?? title} loading="lazy" decoding="async" />
     ) : (
@@ -45,7 +42,7 @@ const readingTime = '8 min read';
     <div class="post-card__meta">
       <time datetime={date.toISOString()}>{formattedDate}</time>
       <span aria-hidden="true">·</span>
-      <span>{readingTime}</span>
+      <span>{readingTimeLabel}</span>
     </div>
 
     <h3 class="post-card__title">{title}</h3>

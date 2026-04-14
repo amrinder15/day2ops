@@ -3,8 +3,9 @@ title: "Closing the GitOps Feedback Loop: Flux Status in Azure DevOps Without Cl
 description: "Your Flux sync completed. Your Azure DevOps pipeline has no idea. Here's how we built a lightweight notification bridge using Flux's Notification Controller and a custom webhook receiver — zero direct cluster access required."
 date: 2024-10-22
 tags: ["gitops", "flux", "azure-devops", "kubernetes", "platform"]
-featured: false
-author: "Day2Ops"
+readingTime: 3
+draft: true
+author: "Amrinder Rattanpal"
 ---
 
 The GitOps dream: you merge a PR, and within minutes your change is live in the cluster. The nightmare version: you merge a PR, the pipeline goes green, and then you have no idea whether Flux actually reconciled your Helm chart successfully — or silently drifted into an error state while you were writing the deployment ticket.

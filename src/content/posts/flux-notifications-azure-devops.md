@@ -4,6 +4,8 @@ description: "When Flux reconciles your Helm chart, your pipeline has already fi
 date: 2024-10-08
 tags: ["gitops", "flux", "kubernetes", "azure-devops", "platform"]
 featured: false
+draft: true
+readingTime: 3
 author: "Day2Ops"
 ---
 

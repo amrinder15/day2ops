@@ -1,0 +1,87 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Day 2 platform operations illustration</title>
+  <desc id="desc">An abstract Day 2 operations dashboard with topology lines, runtime signals, and operational labels for platform, Kubernetes, SRE, and observability topics.</desc>
+  <defs>
+    <linearGradient id="bg" x1="186" y1="66" x2="1426" y2="848" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0C1420"/>
+      <stop offset="0.55" stop-color="#101B2A"/>
+      <stop offset="1" stop-color="#1A2736"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="261" y1="182" x2="1335" y2="714" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#122334"/>
+      <stop offset="1" stop-color="#0E1723"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="335" y1="253" x2="1222" y2="642" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5EEAD4"/>
+      <stop offset="0.5" stop-color="#F59E0B"/>
+      <stop offset="1" stop-color="#F97316"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(372 214) rotate(35.5377) scale(379.546 335.293)">
+      <stop stop-color="#5EEAD4" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#5EEAD4" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1296 732) rotate(-145.166) scale(443.02 310.384)">
+      <stop stop-color="#F97316" stop-opacity="0.24"/>
+      <stop offset="1" stop-color="#F97316" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="900" rx="32" fill="url(#bg)"/>
+  <rect width="1600" height="900" rx="32" fill="url(#glowA)"/>
+  <rect width="1600" height="900" rx="32" fill="url(#glowB)"/>
+  <g opacity="0.18" stroke="#8AA0B8">
+    <path d="M0 150H1600"/>
+    <path d="M0 320H1600"/>
+    <path d="M0 490H1600"/>
+    <path d="M0 660H1600"/>
+    <path d="M220 0V900"/>
+    <path d="M520 0V900"/>
+    <path d="M820 0V900"/>
+    <path d="M1120 0V900"/>
+    <path d="M1420 0V900"/>
+  </g>
+  <rect x="118" y="116" width="1364" height="668" rx="30" fill="url(#panel)" stroke="rgba(255,255,255,0.16)"/>
+  <g opacity="0.9">
+    <rect x="170" y="158" width="170" height="36" rx="18" fill="#132838"/>
+    <text x="210" y="181" fill="#DCE7F2" font-family="IBM Plex Mono, monospace" font-size="16" letter-spacing="0.18em">DAY2OPS</text>
+    <circle cx="197" cy="176" r="6" fill="#5EEAD4"/>
+  </g>
+  <text x="170" y="274" fill="#F8FAFC" font-family="DM Serif Display, Georgia, serif" font-size="88">Day 2 Operations</text>
+  <text x="170" y="336" fill="#D0D9E4" font-family="Inter, Arial, sans-serif" font-size="30">Platform, Kubernetes, SRE, and observability after the launch-day glow wears off.</text>
+  <g>
+    <path d="M170 556C248 520 308 454 392 454C482 454 504 602 620 602C736 602 764 396 902 396C1034 396 1068 540 1178 540C1282 540 1354 484 1430 446" stroke="url(#accent)" stroke-width="10" stroke-linecap="round"/>
+    <path d="M170 610C244 610 278 576 346 576C424 576 468 654 538 654C620 654 686 528 794 528C916 528 928 638 1046 638C1142 638 1222 584 1430 584" stroke="#4FD1C5" stroke-opacity="0.42" stroke-width="4" stroke-linecap="round" stroke-dasharray="10 14"/>
+  </g>
+  <g>
+    <circle cx="392" cy="454" r="16" fill="#5EEAD4"/>
+    <circle cx="620" cy="602" r="16" fill="#F59E0B"/>
+    <circle cx="902" cy="396" r="16" fill="#F97316"/>
+    <circle cx="1178" cy="540" r="16" fill="#FB7185"/>
+  </g>
+  <g>
+    <rect x="1030" y="184" width="372" height="112" rx="24" fill="#0F2130" stroke="rgba(255,255,255,0.12)"/>
+    <text x="1060" y="224" fill="#F59E0B" font-family="IBM Plex Mono, monospace" font-size="18" letter-spacing="0.12em">CONTROL LOOP</text>
+    <text x="1060" y="266" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="30">Upgrade cadence, cert rotation, runbooks</text>
+  </g>
+  <g>
+    <rect x="1030" y="326" width="372" height="112" rx="24" fill="#0F2130" stroke="rgba(255,255,255,0.12)"/>
+    <text x="1060" y="366" fill="#5EEAD4" font-family="IBM Plex Mono, monospace" font-size="18" letter-spacing="0.12em">RUNTIME SIGNALS</text>
+    <text x="1060" y="408" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="30">SLOs, alerts, ownership, feedback</text>
+  </g>
+  <g>
+    <rect x="1030" y="468" width="372" height="180" rx="24" fill="#0F2130" stroke="rgba(255,255,255,0.12)"/>
+    <text x="1060" y="508" fill="#F97316" font-family="IBM Plex Mono, monospace" font-size="18" letter-spacing="0.12em">TOPICS</text>
+    <text x="1060" y="554" fill="#F8FAFC" font-family="IBM Plex Mono, monospace" font-size="28">kubernetes</text>
+    <text x="1265" y="554" fill="#9FB1C3" font-family="IBM Plex Mono, monospace" font-size="28">platform</text>
+    <text x="1060" y="600" fill="#F8FAFC" font-family="IBM Plex Mono, monospace" font-size="28">sre</text>
+    <text x="1160" y="600" fill="#9FB1C3" font-family="IBM Plex Mono, monospace" font-size="28">observability</text>
+    <text x="1060" y="646" fill="#F8FAFC" font-family="IBM Plex Mono, monospace" font-size="28">day2</text>
+  </g>
+  <g>
+    <rect x="170" y="700" width="216" height="50" rx="25" fill="#163042"/>
+    <text x="205" y="732" fill="#D7E5F2" font-family="IBM Plex Mono, monospace" font-size="21">RUNBOOKS</text>
+    <rect x="412" y="700" width="250" height="50" rx="25" fill="#163042"/>
+    <text x="448" y="732" fill="#D7E5F2" font-family="IBM Plex Mono, monospace" font-size="21">GAME DAYS</text>
+    <rect x="690" y="700" width="286" height="50" rx="25" fill="#163042"/>
+    <text x="726" y="732" fill="#D7E5F2" font-family="IBM Plex Mono, monospace" font-size="21">CAPACITY REVIEW</text>
+  </g>
+</svg>

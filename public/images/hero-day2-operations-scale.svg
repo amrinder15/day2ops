@@ -1,0 +1,114 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Day 2 Operations at Scale illustration</title>
+  <desc id="desc">An abstract control room dashboard for platform operations, with incident timelines, runbooks, saturation charts, and operational themes like Kubernetes, SRE, and observability.</desc>
+  <defs>
+    <linearGradient id="bg" x1="172" y1="86" x2="1437" y2="816" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B121C"/>
+      <stop offset="0.52" stop-color="#0F1A28"/>
+      <stop offset="1" stop-color="#1A2836"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="136" y1="122" x2="1440" y2="777" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#112233"/>
+      <stop offset="1" stop-color="#0D1621"/>
+    </linearGradient>
+    <linearGradient id="warm" x1="958" y1="245" x2="1328" y2="501" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F59E0B"/>
+      <stop offset="1" stop-color="#F97316"/>
+    </linearGradient>
+    <linearGradient id="cool" x1="262" y1="406" x2="796" y2="637" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#67E8F9"/>
+      <stop offset="1" stop-color="#22C55E"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1226 224) rotate(137.272) scale(484.197 316.286)">
+      <stop stop-color="#F97316" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#F97316" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(344 676) rotate(-27.834) scale(444.927 245.068)">
+      <stop stop-color="#22C55E" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#22C55E" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1600" height="900" rx="32" fill="url(#bg)"/>
+  <rect width="1600" height="900" rx="32" fill="url(#glowA)"/>
+  <rect width="1600" height="900" rx="32" fill="url(#glowB)"/>
+
+  <g opacity="0.14" stroke="#8DA4BB">
+    <path d="M0 156H1600"/>
+    <path d="M0 324H1600"/>
+    <path d="M0 492H1600"/>
+    <path d="M0 660H1600"/>
+    <path d="M220 0V900"/>
+    <path d="M520 0V900"/>
+    <path d="M820 0V900"/>
+    <path d="M1120 0V900"/>
+    <path d="M1420 0V900"/>
+  </g>
+
+  <rect x="112" y="110" width="1376" height="680" rx="30" fill="url(#panel)" stroke="rgba(255,255,255,0.14)"/>
+
+  <g opacity="0.95">
+    <rect x="160" y="150" width="192" height="38" rx="19" fill="#13293C"/>
+    <circle cx="188" cy="169" r="6" fill="#67E8F9"/>
+    <text x="207" y="175" fill="#E3EDF7" font-family="IBM Plex Mono, monospace" font-size="16" letter-spacing="0.16em">DAY2 CONTROL ROOM</text>
+  </g>
+
+  <text x="160" y="270" fill="#F8FAFC" font-family="DM Serif Display, Georgia, serif" font-size="80">Day 2 Operations</text>
+  <text x="160" y="332" fill="#D2DCE7" font-family="Inter, Arial, sans-serif" font-size="30">What nobody tells you about running a platform at scale after go-live.</text>
+
+  <g>
+    <rect x="160" y="388" width="636" height="236" rx="28" fill="#0F2030" stroke="rgba(255,255,255,0.10)"/>
+    <text x="194" y="428" fill="#67E8F9" font-family="IBM Plex Mono, monospace" font-size="18" letter-spacing="0.12em">PLATFORM SIGNALS</text>
+    <path d="M194 540C264 540 280 472 342 472C409 472 434 584 522 584C606 584 624 446 724 446" stroke="url(#cool)" stroke-width="10" stroke-linecap="round"/>
+    <path d="M194 570C254 570 288 530 348 530C404 530 458 604 520 604C597 604 622 498 724 498" stroke="#60A5FA" stroke-opacity="0.48" stroke-width="4" stroke-linecap="round" stroke-dasharray="9 13"/>
+    <circle cx="342" cy="472" r="13" fill="#67E8F9"/>
+    <circle cx="522" cy="584" r="13" fill="#22C55E"/>
+    <circle cx="724" cy="446" r="13" fill="#F59E0B"/>
+    <text x="194" y="602" fill="#D5E1ED" font-family="Inter, Arial, sans-serif" font-size="24">Latency, saturation, drift, and on-call pain show up after launch day.</text>
+  </g>
+
+  <g>
+    <rect x="828" y="206" width="610" height="170" rx="28" fill="#0F2030" stroke="rgba(255,255,255,0.10)"/>
+    <text x="862" y="246" fill="#F59E0B" font-family="IBM Plex Mono, monospace" font-size="18" letter-spacing="0.12em">INCIDENT RHYTHM</text>
+    <path d="M862 308H1366" stroke="#29394A" stroke-width="8" stroke-linecap="round"/>
+    <path d="M862 308H1224" stroke="url(#warm)" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="958" cy="308" r="11" fill="#F59E0B"/>
+    <circle cx="1104" cy="308" r="11" fill="#FB7185"/>
+    <circle cx="1224" cy="308" r="11" fill="#F97316"/>
+    <text x="862" y="344" fill="#D5E1ED" font-family="Inter, Arial, sans-serif" font-size="24">Runbooks, handoffs, and recovery muscle matter more than launch-day polish.</text>
+  </g>
+
+  <g>
+    <rect x="828" y="408" width="292" height="216" rx="28" fill="#0F2030" stroke="rgba(255,255,255,0.10)"/>
+    <text x="860" y="448" fill="#A3E635" font-family="IBM Plex Mono, monospace" font-size="18" letter-spacing="0.12em">RUNBOOKS</text>
+    <rect x="860" y="478" width="228" height="26" rx="13" fill="#1B3344"/>
+    <rect x="860" y="522" width="200" height="26" rx="13" fill="#1B3344"/>
+    <rect x="860" y="566" width="170" height="26" rx="13" fill="#1B3344"/>
+    <path d="M1056 488L1068 500L1092 476" stroke="#67E8F9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M1028 532L1040 544L1064 520" stroke="#67E8F9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="860" y="616" fill="#D5E1ED" font-family="Inter, Arial, sans-serif" font-size="22">Document the boring work before it becomes incident work.</text>
+  </g>
+
+  <g>
+    <rect x="1146" y="408" width="292" height="216" rx="28" fill="#0F2030" stroke="rgba(255,255,255,0.10)"/>
+    <text x="1178" y="448" fill="#FB7185" font-family="IBM Plex Mono, monospace" font-size="18" letter-spacing="0.12em">CAPACITY</text>
+    <rect x="1180" y="586" width="38" height="-96" rx="19" fill="#20384B"/>
+    <rect x="1240" y="586" width="38" height="-132" rx="19" fill="#2A5264"/>
+    <rect x="1300" y="586" width="38" height="-74" rx="19" fill="#3E7A80"/>
+    <rect x="1360" y="586" width="38" height="-160" rx="19" fill="#F97316"/>
+    <text x="1178" y="616" fill="#D5E1ED" font-family="Inter, Arial, sans-serif" font-size="22">Growth curves are gentle until they are suddenly urgent.</text>
+  </g>
+
+  <g>
+    <rect x="160" y="664" width="176" height="50" rx="25" fill="#163042"/>
+    <text x="193" y="696" fill="#D8E5F2" font-family="IBM Plex Mono, monospace" font-size="21">DAY2</text>
+    <rect x="362" y="664" width="228" height="50" rx="25" fill="#163042"/>
+    <text x="396" y="696" fill="#D8E5F2" font-family="IBM Plex Mono, monospace" font-size="21">PLATFORM</text>
+    <rect x="618" y="664" width="212" height="50" rx="25" fill="#163042"/>
+    <text x="652" y="696" fill="#D8E5F2" font-family="IBM Plex Mono, monospace" font-size="21">KUBERNETES</text>
+    <rect x="858" y="664" width="138" height="50" rx="25" fill="#163042"/>
+    <text x="892" y="696" fill="#D8E5F2" font-family="IBM Plex Mono, monospace" font-size="21">SRE</text>
+    <rect x="1022" y="664" width="258" height="50" rx="25" fill="#163042"/>
+    <text x="1056" y="696" fill="#D8E5F2" font-family="IBM Plex Mono, monospace" font-size="21">OBSERVABILITY</text>
+  </g>
+</svg>

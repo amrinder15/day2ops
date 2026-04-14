@@ -7,9 +7,9 @@ export const SITE_OWNER = {
 };
 
 export const resolveAuthorName = (author?: string) => {
-  if (!author || author === 'Day2Ops') {
+  if (!author?.trim()) {
     return SITE_OWNER.name;
   }
 
-  return author;
+  return author.trim();
 };

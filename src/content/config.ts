@@ -1,5 +1,4 @@
 import { defineCollection, z } from 'astro:content';
-import { SITE_OWNER } from '../lib/site';
 
 const posts = defineCollection({
   type: 'content',
@@ -11,9 +10,10 @@ const posts = defineCollection({
     tags: z.array(z.string()).default([]),
     heroImage: z.string().optional(),
     heroImageAlt: z.string().optional(),
+    heroImageFit: z.enum(['cover', 'contain']).optional(),
     draft: z.boolean().default(false),
     featured: z.boolean().default(false),
-    author: z.string().default(SITE_OWNER.name),
+    author: z.string().default('Day2Ops'),
     readingTime: z.number().optional(),
   }),
 });

@@ -3,8 +3,11 @@ title: "Writing Your First Kubernetes Operator: Beyond the Hello World"
 description: "The operator-sdk scaffolding is easy. The reconcile loop that actually handles real-world edge cases — retries, finalizers, status conditions — is where the learning happens."
 date: 2024-09-21
 tags: ["kubernetes", "operators", "golang", "controller-runtime", "platform"]
-featured: false
-author: "Day2Ops"
+heroImage: "/images/k8s-op-beyond.png"
+heroImageAlt: "Kubernetes operator dashboard with status conditions and finalizers"
+heroImageFit: "contain"
+readingTime: 3
+author: "Amrinder Rattanpal"
 ---
 
 Every Kubernetes operator tutorial ends at the same place: "and now your controller is reconciling!" They show you a green log line and call it done.

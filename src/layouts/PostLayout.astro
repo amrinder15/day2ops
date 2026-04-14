@@ -12,7 +12,7 @@ interface Props {
 }
 
 const { post, headings } = Astro.props;
-const { title, description, date, updatedDate, tags, heroImage, heroImageAlt, author } = post.data;
+const { title, description, date, updatedDate, tags, heroImage, heroImageAlt, heroImageFit, author } = post.data;
 const displayAuthor = resolveAuthorName(author);
 
 const formattedDate = new Intl.DateTimeFormat('en-US', {
@@ -39,7 +39,7 @@ const updatedFormatted = updatedDate
 
   <!-- Hero -->
   {heroImage && (
-    <div class="post-hero liquid-surface" data-article-hero>
+    <div class={`post-hero liquid-surface ${heroImageFit === 'contain' ? 'post-hero--contain' : ''}`} data-article-hero>
       <div class="container">
         <img
           src={heroImage}
@@ -91,19 +91,6 @@ const updatedFormatted = updatedDate
                     {updatedFormatted && (
                       <span>· Updated <time datetime={updatedDate!.toISOString()} itemprop="dateModified">{updatedFormatted}</time></span>
                     )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="post-header__owner">
-              <p class="post-header__owner-copy">{SITE_OWNER.shortBio}</p>
-              <div class="post-header__owner-links">
-                <a href={SITE_OWNER.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
-                <a href={SITE_OWNER.github} target="_blank" rel="noreferrer">GitHub</a>
-                <a href="/about">About</a>
-              </div>
-            </div>
           </header>
 
           <!-- Body -->
@@ -152,6 +139,13 @@ const updatedFormatted = updatedDate
   max-height: 480px;
   object-fit: cover;
   display: block;
+}
+
+.post-hero--contain .post-hero__img {
+  height: min(480px, 42vw);
+  margin-inline: auto;
+  object-fit: contain;
+  padding: var(--space-6) 0;
 }
 
 .post-page {
